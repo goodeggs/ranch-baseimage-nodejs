@@ -31,7 +31,7 @@ WORKDIR /app
 
 ONBUILD ARG RANCH_BUILD_ENV
 ONBUILD COPY package.json npm-shrinkwrap.json .npmrc /app/
-ONBUILD RUN . ranch_build_env \
+ONBUILD RUN eval `ranch_build_env` \
   && chown app:app /app/package.json /app/npm-shrinkwrap.json /app/.npmrc \
   && install_nodejs `cat package.json | jq -r '.engines.node'` \
   && install_npm `cat package.json | jq -r '.engines.npm'`
@@ -39,7 +39,7 @@ ONBUILD RUN . ranch_build_env \
 ONBUILD ENV HOME=/app
 ONBUILD USER app
 
-ONBUILD RUN . ranch_build_env \
+ONBUILD RUN eval `ranch_build_env` \
   && npm-production install --userconfig /app/.npmrc
 
 ONBUILD COPY . /app/
