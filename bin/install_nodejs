@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -o errexit    # always exit on error
+set -o pipefail   # don't ignore exit codes when piping output
+set -o nounset    # fail on unset variables
+
+needs_resolution() {
+  local semver=$1
+  if ! [[ "$semver" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+version="$1"
+if [[ "$version" == "null" ]]; then
+  version=""
+fi
+
+if needs_resolution "$version"; then
+  echo "Resolving node version ${version:-(latest stable)} via semver.io..."
+  version=$(curl --silent --get --retry 5 --retry-max-time 15 --data-urlencode "range=${version}" https://semver.herokuapp.com/node/resolve)
+fi
+
+cd /tmp
+curl -SLO "https://nodejs.org/dist/v$version/node-v$version-linux-x64.tar.xz"
+curl -SLO "https://nodejs.org/dist/v$version/SHASUMS256.txt.asc"
+gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc
+grep " node-v$version-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c -
+tar -xJf "node-v$version-linux-x64.tar.xz" -C /usr/local --strip-components=1
+rm "node-v$version-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt
+
