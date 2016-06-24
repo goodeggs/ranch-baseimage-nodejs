@@ -10,13 +10,21 @@ Your app **must** contain three files in its root:
 * `npm-shrinkwrap.json`
 * `.npmrc` _(can be blank)_
 
+And you **must** pass a docker build arg called `RANCH_BUILD_ENV`. _(see below)_
+
 ## Usage
 
-Create a `Dockerfile` for your app:
+Create a `Dockerfile` in your app's root:
 
 ```dockerfile
 FROM goodeggs/ranch-baseimage-nodejs:latest
 # the rest is handled by ONBUILD instructions.
+```
+
+And the most basic build:
+
+```
+$ docker build --build-arg 'RANCH_BUILD_ENV={}' .
 ```
 
 ## How it works
@@ -25,7 +33,15 @@ The secret sauce here is to embrace Docker image layer caching behavior.  By add
 
 ## Features
 
-### Node & NPM Versions
+### Build-time variables
+
+You can pass a list of environment variables encoded as a JSON object in a docker build arg called `RANCH_BUILD_ENV`.  A normal use of this is to pass a private NPM repository token for use during the `npm install` step.  It can be the empty string but you must pass it or docker will throw.
+
+```
+$ docker build --build-arg 'RANCH_BUILD_ENV={"NPM_AUTH":"sekret"}' .
+```
+
+### Node & NPM versions
 
 During `docker build`, the `engines.node` and `engines.npm` properties will be read out of your `package.json` file, and the appropriate versions (including semver resolution) will be installed.
 

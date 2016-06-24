@@ -1,0 +1,6 @@
+
+if [ -n "$RANCH_BUILD_ENV" ]; then
+  echo 'loading $RANCH_BUILD_ENV'
+  export $(echo "$RANCH_BUILD_ENV" | jq -r '. as $in | keys[] | [., @sh "\($in[.])"] | "\(.[0])=\(.[1])"')
+fi
+
