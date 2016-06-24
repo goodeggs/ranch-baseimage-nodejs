@@ -14,3 +14,6 @@ release:
 	docker tag goodeggs/ranch-baseimage-nodejs:$(GIT_SHA) goodeggs/ranch-baseimage-nodejs:latest
 	docker push goodeggs/ranch-baseimage-nodejs:latest
 
+test:
+	./test.sh
+
