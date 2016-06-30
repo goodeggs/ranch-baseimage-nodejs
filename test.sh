@@ -20,6 +20,9 @@ EOF
   "version": "1.0.0",
   "dependencies": {
     "chicken-hatchling": "*"
+  },
+  "scripts": {
+    "start": "echo hello world"
   }
 }
 EOF
@@ -50,13 +53,27 @@ function assert_equal {
   message=$1
   actual=$2
   expected=$3
-  [[ "$actual" == "$expected" ]] || ( echo "FAIL: ${message}, expected: '${expected}', got: '${actual}'"; exit 1 )
+  if [[ "$actual" == "$expected" ]]; then
+    echo "PASS: ${message}"
+  else
+    echo "FAIL: ${message}, expected: '${expected}', got: '${actual}'"
+    exitcode=1
+  fi
 }
 
 function run {
   docker run --rm -i $image_id "$@"
 }
 
-assert_equal "/app/package.json is owned by app" `run stat -c %U /app/package.json` "app"
-assert_equal "/app/random_file is owned by app" `run stat -c %U /app/random_file` "app"
+function main {
+  local exitcode=0
 
+  assert_equal "/app/package.json is owned by root" "$(run stat -c %U /app/package.json)" "root"
+  assert_equal "/app/random_file is owned by root" "$(run stat -c %U /app/random_file)" "root"
+  assert_equal "user is root" "$(run whoami)" "root"
+  assert_equal "'npm start' works" "$(run npm start | tail -n1)" "hello world"
+
+  exit $exitcode
+}
+
+main

@@ -31,6 +31,12 @@ $ docker build --build-arg 'RANCH_BUILD_ENV={}' .
 
 The secret sauce here is to embrace Docker image layer caching behavior.  By adding `package.json`, `npm-shrinkwrap.json`, and `.npmrc` in a separate instruction, we will skip the entire `npm install` routine unless one of those files has changed.  (or the docker build cache is empty)
 
+### Caveat
+
+Your app runs as root inside the container.  The reason is a shortcoming of Docker: `COPY` and `ADD` instructions do not respect `USER` instructions, they always add files with `root` as the owner.  If we then `RUN chown -R app:app /app`, we end up with an entire new Docker layer and double the resulting image size.  This is unacceptable.
+
+There is hope that Docker will address this, but work is frozen until they split the builder out.  See [docker/docker#13600](https://github.com/docker/docker/pull/13600#issuecomment-119381749) and the [Dockerfile syntax section of Docker's roadmap](https://github.com/docker/docker/blob/master/ROADMAP.md#22-dockerfile-syntax) for more details.
+
 ## Features
 
 ### Build-time variables

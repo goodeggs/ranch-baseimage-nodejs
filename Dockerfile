@@ -19,7 +19,6 @@ RUN deps='jq xz-utils' \
     && set -x \
     && apt-get update && apt-get install -y $deps --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
-    && useradd --home /app --user-group --create-home --shell /bin/false app \
     && ln -s /usr/local/bin/start /start
 
 COPY bin/* /usr/local/bin/
@@ -38,8 +37,6 @@ ONBUILD RUN eval `ranch_build_env` \
   && npm-production install --unsafe-perm --userconfig /app/.npmrc
 
 ONBUILD COPY . /app/
-ONBUILD RUN chown -R app:app /app
 
 ONBUILD ENV HOME=/app
-ONBUILD USER app
 
