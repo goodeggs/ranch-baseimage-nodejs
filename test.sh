@@ -22,7 +22,8 @@ EOF
     "chicken-hatchling": "*"
   },
   "scripts": {
-    "start": "echo hello world"
+    "start": "echo hello world",
+    "postinstall": "touch postinstall-done"
   }
 }
 EOF
@@ -72,6 +73,7 @@ function main {
   assert_equal "/app/random_file is owned by root" "$(run stat -c %U /app/random_file)" "root"
   assert_equal "user is root" "$(run whoami)" "root"
   assert_equal "'npm start' works" "$(run npm start | tail -n1)" "hello world"
+  assert_equal "npm postinstall script runs" "$(run test -f /app/postinstall-done || echo fail)" ""
 
   exit $exitcode
 }
