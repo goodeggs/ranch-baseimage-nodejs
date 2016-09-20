@@ -37,4 +37,4 @@ export WEB_CONCURRENCY=$WEB_CONCURRENCY
 
 export DYNO="${PROCESS:-run}.$(hostname)"
 
-exec "$@"
+eval exec $@
