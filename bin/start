@@ -3,30 +3,38 @@ set -o errexit    # always exit on error
 set -o pipefail   # don't ignore exit codes when piping output
 set -o nounset    # fail on unset variables
 
-APP_PATH=/app
+calculate_concurrency() {
+  MEMORY_AVAILABLE=${MEMORY_AVAILABLE-$(detect_memory 512)}
+  WEB_MEMORY=${WEB_MEMORY-512}
+  WEB_CONCURRENCY=${WEB_CONCURRENCY-$((MEMORY_AVAILABLE/WEB_MEMORY))}
+  if (( WEB_CONCURRENCY < 1 )); then
+    WEB_CONCURRENCY=1
+  elif (( WEB_CONCURRENCY > 32 )); then
+    WEB_CONCURRENCY=32
+  fi
+  WEB_CONCURRENCY=$WEB_CONCURRENCY
+}
 
-proc=$1
+detect_memory() {
+  local default=$1
+  # correct memory measurement for docker containers
+  if [ -f /sys/fs/cgroup/memory/memory.limit_in_bytes ]; then
+    local bytes=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)
+    echo $(( $bytes / 1000000 ))
+  else
+    echo "$default"
+  fi
+}
 
-if [ "$proc" == "" ]; then
-  echo "usage: start <process>"
-  exit 1
-fi
+export PATH="./node_modules/.bin:$PATH"
+export NODE_ENV=${NODE_ENV:-production}
 
-procfile="$APP_PATH/Procfile"
+calculate_concurrency
 
-if [ ! -r $procfile ]; then
-  echo "cannot read $procfile"
-  exit 1
-fi
+export MEMORY_AVAILABLE=$MEMORY_AVAILABLE
+export WEB_MEMORY=$WEB_MEMORY
+export WEB_CONCURRENCY=$WEB_CONCURRENCY
 
-cmd=`cat $APP_PATH/Procfile | grep "^[[:space:]]*$proc[[:space:]]*:" | sed "s/^[[:space:]]*$proc[[:space:]]*:[[:space:]]*//"`
+export DYNO="${PROCESS:-run}.$(hostname)"
 
-if [ "$cmd" == "" ]; then
-  echo "'$proc' process is not in your Procfile"
-  exit 1
-fi
-
-export DYNO=$proc.`hostname`
-
-eval exec $cmd
-
+eval exec $@
