@@ -23,7 +23,7 @@ RUN deps='jq xz-utils' \
 
 COPY bin/* /usr/local/bin/
 
-ENTRYPOINT ["/usr/local/bin/entrypoint"]
+ENTRYPOINT ["/start"]
 CMD ["/bin/bash"]
 
 WORKDIR /app
