@@ -30,11 +30,15 @@ WORKDIR /app
 
 ONBUILD ARG RANCH_BUILD_ENV
 
-ONBUILD COPY package.json npm-shrinkwrap.json .npmrc /app/
+ONBUILD COPY package.json .npm-shrinkwrap.json .npmrc /app/
+
 ONBUILD RUN eval `ranch_build_env` \
+  && export PACKAGE_JSON_ENGINE=`jq -r '.engines | keys | map(select(. != "node")) | .[0]' package.json` \
+  && export PACKAGE_MANAGER=${PACKAGE_JSON_ENGINE:-npm} \
+  && export PACKAGE_MANAGER_VERSION=$(jq -r ".engines.$PACKAGE_MANAGER" package.json)  \
   && install_nodejs `cat package.json | jq -r '.engines.node'` \
-  && install_npm `cat package.json | jq -r '.engines.npm'` \
-  && npm-production install --unsafe-perm --userconfig /app/.npmrc
+  && install_$PACKAGE_MANAGER  $PACKAGE_MANAGER_VERSION \
+  && $PACKAGE_MANAGER-production install --unsafe-perm --userconfig /app/.npmrc
 
 ONBUILD COPY . /app/
 
