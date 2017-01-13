@@ -2,19 +2,23 @@
 
 cronitor_id=$1
 shift
-cmd=$@
 
-curl https://cronitor.link/${cronitor_id}/run -m 10
+cronitor() {
+  cmd=$1
+  http_code=$( curl -sSm 10 -o /dev/null --write-out '%{http_code}' "https://cronitor.link/${cronitor_id}/${cmd}" )
+  exit_code=$?
+  echo "cronitor $cronitor_id $cmd [curl: $exit_code http: $http_code]"
+}
 
-(
-  eval $cmd
-)
+cronitor run
+
+"$@"
 code=$?
 
 if [ $code -eq 0 ]; then
-  curl https://cronitor.link/${cronitor_id}/complete -m 10
+  cronitor complete
 else
-  curl https://cronitor.link/${cronitor_id}/fail -m 10
+  cronitor fail
 fi
 
 exit $code
