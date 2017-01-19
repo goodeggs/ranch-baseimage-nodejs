@@ -7,7 +7,7 @@ A Docker base image for NodeJS apps.
 Your app **must** contain three files in its root:
 
 * `package.json`
-* `npm-shrinkwrap.json`
+* `npm-shrinkwrap.json` OR `yarn.lock`
 * `.npmrc` _(can be blank)_
 
 And you **must** pass a docker build arg called `RANCH_BUILD_ENV`. _(see below)_
