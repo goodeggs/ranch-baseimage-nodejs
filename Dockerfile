@@ -28,13 +28,14 @@ CMD ["/bin/bash"]
 
 WORKDIR /app
 
+ARG RANCH_BUILD_ENV
 ONBUILD ARG RANCH_BUILD_ENV
 
-ONBUILD COPY package.json npm-shrinkwrap.json .npmrc /app/
+ONBUILD COPY package.json yarn.lock .npmrc /app/
 ONBUILD RUN eval `ranch_build_env` \
   && install_nodejs `cat package.json | jq -r '.engines.node'` \
-  && install_npm `cat package.json | jq -r '.engines.npm'` \
-  && npm-production install --unsafe-perm --userconfig /app/.npmrc
+  && install_yarn `cat package.json | jq -r '.engines.yarn'` \
+  && yarn-production --userconfig /app/.npmrc
 
 ONBUILD COPY . /app/
 
