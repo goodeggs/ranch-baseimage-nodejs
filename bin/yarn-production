@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+echo "INSTALLING WITH YARN!"
+set -o errexit    # always exit on error
+set -o pipefail   # don't ignore exit codes when piping output
+set -o nounset    # fail on unset variables
+
+while [[ $# -gt 1 ]]
+do
+key="$1"
+
+case $key in
+    --userconfig)
+    USERCONFIG="$2"
+    shift
+    ;;
+    *)
+      # unknown option
+    ;;
+esac
+shift # past argument or value
+done
+
+if [ $USERCONFIG ]; then
+  export NPM_CONFIG_USERCONFIG=$USERCONFIG
+fi
+
+yarn --production --ignore-engines
