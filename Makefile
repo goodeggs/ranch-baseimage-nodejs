@@ -7,7 +7,7 @@ MINOR_VERSION := $(shell awk -F. '{print $$2}' VERSION)
 all: build
 
 build:
-	docker build -t goodeggs/ranch-baseimage-nodejs .
+	docker build --squash -t goodeggs/ranch-baseimage-nodejs .
 
 release:
 	echo $(VERSION)
