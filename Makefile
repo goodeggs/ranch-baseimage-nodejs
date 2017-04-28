@@ -24,6 +24,6 @@ release: build
 	docker tag $(IMAGE):latest $(IMAGE):$(MAJOR_VERSION)
 	docker push $(IMAGE):$(MAJOR_VERSION)
 
-test:
+test: build
 	./test.sh
 
