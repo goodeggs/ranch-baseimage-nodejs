@@ -14,7 +14,7 @@ release:
 	echo $(MAJOR_VERSION)
 	echo $(MINOR_VERSION)
 	( git diff --quiet && git diff --cached --quiet ) || ( echo "checkout must be clean"; false )
-	docker build -t goodeggs/ranch-baseimage-nodejs:latest-yarn .
+	docker build --squash -t goodeggs/ranch-baseimage-nodejs:latest-yarn .
 	docker push goodeggs/ranch-baseimage-nodejs:latest-yarn
 	docker tag goodeggs/ranch-baseimage-nodejs:latest-yarn goodeggs/ranch-baseimage-nodejs:$(VERSION)-yarn
 	docker push goodeggs/ranch-baseimage-nodejs:$(VERSION)-yarn
