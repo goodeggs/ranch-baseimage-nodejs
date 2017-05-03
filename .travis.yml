@@ -1,0 +1,25 @@
+dist: trusty
+sudo: required
+
+language: ruby
+
+env:
+  global:
+  - secure: "fLPGlg6qKERKJyqd4gSoYYY8H4XFiQoeCqIxAzrpWOxZsZke2n3zTu+U9mK3sG9uxZigWg7Cbb8D2DJmRZ6Lu/WDCx/sTRDF2E63dmibE5ST8rDwgxFH9TuVrOlUfa4+NdPtjLvbVm1yh7OVRdsBScw+VJ10ikV6jdT8YZSVeSaLitfPLzH1hwzJdvW1YWyIXNHaoYJRuoY621judzmopeXYdGLsGqcL7JtmSgU2um3HIKKbqkuqDMpyLlsCB6PlCnalaj6C86QFLo1hjUSKfahP+4lORSyshoytZWO+CkCAoaJz8hZA5yuUs5NlK25S4JFUZmFvTgsgWMuiZ+qvrjShd8GY33GSW4idYXRbgyVWocDzkTRjsNoLWbzPDlmLpPUqdxvtMhft+8TkUbyxcPJVfGj4q4iMWeQTO+bee8ymFn/azqLW1lFlylWkVd5Ex6IY7MpHXAFI/wjD5yceUJD2lWYSsxekPSFoFVKs/Yx0N0KKbIsgB+WphH81eHAW3U3pIiOJAmoxI47sWFYrViYkov6o7QUIbRLiL6IqpdI5/uNOnT1Xcr+X11WA+IyLlHgwqQ6nOXhNbuViVBS49Q+W6Vd4NFxKh773osmXl10p4NKEj5jlHpvwShyNjkJFDGvNIOEsm7vHsXZCVq745QMl6KNu+g36iazx06KA2NU=" # DOCKER_USER
+  - secure: "Ofa/clrc1pB8ZPDu/l9XG2vF8TezNKOhLR/3h2FfMRo7YeV/c8GofKNRfU9VO5HNlRZsYcAwEJwsO/+MmNGZT9VNkjedH6iqnbkHcJQGKND5/TnXiJPua5cKQ4L4KS6zv/2WLLk3d7zkrmiU3DB8apLN+enBqdSWkFoQxdVcZyhcR8YdWg4Qgu650F64gfDsCRACDnNVMiVHyqQH2mdxAiVjC9CHGgMSH2GOInYwUANSc92xJAwbQMB/gYXnJ+QFcRs8Gpve/NOX4brr2hhjwFm00DIHzJgK/JAelmka9HqASUvz5R1cDaNU7x02Wt1zGslSkQgwWXI3UaRO48W2JM2NFxIAb7Bz8SVPULuDAlFN/5HFDSOrmnTH3aIZFfZ/Hm/uvYDgWEizF+GUA83MM7cHx6hphA8WsZ2ALG3ozqgP3vP4Rq3phL9i5f5054icxTARs2/UbHPgn7A4O+Cwp/hEMvv4M8Lk/ezCnLQA5iTljsk/mtFwy7Ne65UBxb/8S+F1BpqxHwrx5yDlOEVJ8EDzbBHv6otG0ApphNk1ccvfP/fCACMuDY2gEcOS1EVuF2aey5y3mKlUPnz1KOpYzXvjtln7z4KfFsHHaFDFwJqtXRlmxto4rliryBZ9fsIug+wfRrC7VSA4JMcFkEeJclbJcpoE1MVDjUAVaRo7YkA=" # DOCKER_PASS
+
+install: true # skip
+
+before_script: make build
+
+script: make test
+
+before_deploy: docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+
+deploy:
+  provider: script
+  script: make release
+  on:
+    tags: true
+    all_branches: true
+
