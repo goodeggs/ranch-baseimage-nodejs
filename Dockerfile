@@ -7,6 +7,7 @@ RUN deps='jq xz-utils' \
     && ln -s /usr/local/bin/start /start
 
 COPY bin/* /usr/local/bin/
+COPY lib/* /usr/local/lib/ranch/
 
 ENTRYPOINT ["/start"]
 CMD ["/bin/bash"]

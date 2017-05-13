@@ -29,3 +29,11 @@ grep " node-v$version-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c -
 tar -xJf "node-v$version-linux-x64.tar.xz" -C /usr/local --strip-components=1
 rm "node-v$version-linux-x64.tar.xz" SHASUMS256.txt
 
+mv /usr/local/bin/node /usr/local/bin/node.bin
+cat > /usr/local/bin/node <<-EOF
+#!/bin/sh
+. /usr/local/lib/ranch/memory_limit_mb.sh
+memory_limit=\$(memory_limit_mb)
+exec /usr/local/bin/node.bin --max-old-space-size=\$(( memory_limit / 4 * 3 )) "\$@"
+EOF
+chmod +x /usr/local/bin/node

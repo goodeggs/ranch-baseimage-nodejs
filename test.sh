@@ -62,7 +62,7 @@ function assert_equal {
 }
 
 function run {
-  docker run --rm -i "$image_id" "$@"
+  docker run --rm -i --memory 100m "$image_id" "$@"
 }
 
 function main {
@@ -73,6 +73,7 @@ function main {
   assert_equal "user is root" "$(run whoami)" "root"
   assert_equal "'npm start' works" "$(run npm start | tail -n1)" "hello world"
   assert_equal "npm postinstall script runs" "$(run test -f /app/postinstall-done || echo fail)" ""
+  assert_equal "node sets --max-old-space-size" "$(run node -e 'console.log(process.execArgv.indexOf("--max-old-space-size=75") >= 0)')" "true"
 
   exit $exitcode
 }
