@@ -1,7 +1,7 @@
 .PHONY: all build release
 
 IMAGE := goodeggs/ranch-baseimage-nodejs
-TAG_SUFFIX := "-yarn"
+TAG_SUFFIX := -yarn
 VERSION := $(shell cat VERSION)
 MAJOR_VERSION := $(shell awk -F. '{print $$1}' VERSION)
 MINOR_VERSION := $(shell awk -F. '{print $$2}' VERSION)
