@@ -25,4 +25,5 @@ ONBUILD RUN eval `ranch_build_env` \
 ONBUILD COPY . /app/
 
 ONBUILD ENV HOME=/app
+ONBUILD ENV BABEL_DISABLE_CACHE=1
 

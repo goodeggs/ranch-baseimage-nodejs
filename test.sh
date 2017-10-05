@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
-set -o errexit    # always exit on error
-set -o pipefail   # don't ignore exit codes when piping output
-set -o nounset    # fail on unset variables
+set -e
+set -o pipefail
 
-image_id=${1-""}
+image_id="$1"
 
 if [[ -z "$image_id" ]]; then
-  docker build -t foo .
-
-  cd `mktemp -d`
-
+  docker build -t goodeggs/ranch-baseimage-nodejs:latest .
+  
+  cd "$(mktemp -d)"
   cat > Dockerfile <<EOF
-FROM foo
+FROM goodeggs/ranch-baseimage-nodejs:latest
 EOF
 
   cat > package.json <<EOF
@@ -42,8 +40,8 @@ EOF
   touch random_file
 
   docker build --build-arg 'RANCH_BUILD_ENV={}' . | tee docker.log
-
-  image_id=`tail -n1 docker.log | awk '{print $3}'`
+  
+  image_id=$(tail -n1 docker.log | awk '{print $3}')
 fi
 
 function assert_equal {
@@ -59,7 +57,7 @@ function assert_equal {
 }
 
 function run {
-  docker run --rm -i $image_id "$@"
+  docker run --rm -i "$image_id" "$@"
 }
 
 function main {
