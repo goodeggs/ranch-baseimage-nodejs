@@ -7,3 +7,5 @@ version="$1"
 
 [[ "$version" == "null" ]] || npm install -g yarn@$version
 
+# workaround for https://github.com/yarnpkg/yarn/issues/1874
+yarn config set child-concurrency 1
