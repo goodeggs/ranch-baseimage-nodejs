@@ -23,6 +23,8 @@ if needs_resolution "$version"; then
 fi
 
 cd /tmp
+# Key Download
+gpg --keyserver pool.sks-keyservers.net --recv-keys 77984A986EBC2AA786BC0F66B01FBB92821C587A
 curl -SLO "https://nodejs.org/dist/v$version/node-v$version-linux-x64.tar.xz"
 curl -SLO "https://nodejs.org/dist/v$version/SHASUMS256.txt"
 grep " node-v$version-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c -
