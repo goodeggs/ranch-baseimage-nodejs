@@ -35,7 +35,7 @@ export MEMORY_AVAILABLE=$MEMORY_AVAILABLE
 export WEB_MEMORY=$WEB_MEMORY
 export WEB_CONCURRENCY=$WEB_CONCURRENCY
 
-if [ -f "${ECS_CONTAINER_METADATA_FILE}" ]
+if [ -f "${ECS_CONTAINER_METADATA_FILE:-}" ]
 then
   export TASKID=$(cat ${ECS_CONTAINER_METADATA_FILE} | jq .TaskARN | awk '{split($0,a,"-"); print a[7]}' | sed 's/\"//g')
   export DYNO="${PROCESS:-run}.${TASKID}"
