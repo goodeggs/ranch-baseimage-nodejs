@@ -5,11 +5,11 @@ set -o pipefail
 image_id="$1"
 
 if [[ -z "$image_id" ]]; then
-  docker build -t goodeggs/ranch-baseimage-nodejs:latest .
-  
+  make build-yarn
+
   cd "$(mktemp -d)"
   cat > Dockerfile <<EOF
-FROM goodeggs/ranch-baseimage-nodejs:latest
+FROM goodeggs/ranch-baseimage-nodejs:yarn
 EOF
 
   cat > package.json <<EOF
@@ -40,7 +40,7 @@ EOF
   touch random_file
 
   docker build --build-arg 'RANCH_BUILD_ENV={}' . | tee docker.log
-  
+
   image_id=$(tail -n1 docker.log | awk '{print $3}')
 fi
 
